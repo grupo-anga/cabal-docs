@@ -11,6 +11,7 @@ parents: ["Processos"]
 *Quando a solicitação do Cliente demandar um novo Projeto, sob orientação e supervisão da Gerência de Desenvolvimento Corporativo (Gedec), o fluxo abaixo mostra as etapas a serem seguidas desde solicitação até a entrega de valor pelo projeto:*
 
 [ I M A G E M ](https://drive.google.com/file/d/1D8q0-JxYQXcz7DoEQYg1ipehm9f8XZiC/view?usp=sharing)
+![](https://i.imgur.com/XgmDXzf.png)
 
 Fases:
 
