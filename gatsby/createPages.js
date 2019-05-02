@@ -1,4 +1,3 @@
-
 const replacePath = require('./utils')
 const path = require("path")
 
@@ -9,15 +8,16 @@ module.exports = exports.createPages = ({ actions, graphql }) => {
 
   return graphql(`
     {
-      allMarkdownRemark(
-        sort: { order: DESC, fields: [frontmatter___date] }
-        limit: 1000
-      ) {
+      allContentfulItem(sort: { order:ASC, fields: [section___order, order] }) {
         edges {
           node {
-            fields {
+            slug
+            section {
+              order
               slug
             }
+            order
+            title
           }
         }
       }
@@ -26,12 +26,16 @@ module.exports = exports.createPages = ({ actions, graphql }) => {
     if (result.errors) {
       return Promise.reject(result.errors)
     }
-
-    result.data.allMarkdownRemark.edges.forEach(({ node }) => {
+    const root = '/docs'
+    const items = result.data.allContentfulItem.edges
+    items.sort((a, b) => a.node.section.order === b.node.section.order ? a.node.order - b.node.order : a.node.section.order - b.node.section.order)
+    items.forEach(({ node }) => {
       createPage({
-        path: replacePath(node.fields.slug),
+        path: replacePath(`${root}/${node.section.slug}/${node.slug}`),
         component: postTemplate,
-        context: {}, // additional data can be passed via context
+        context: { // additional data can be passed via context
+          slug: node.slug
+        },
       })
     })
   })

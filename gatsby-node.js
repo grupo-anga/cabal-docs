@@ -7,4 +7,10 @@
 // You can delete this file if you're not using it
 
 exports.createPages = require('./gatsby/createPages')
-exports.onCreateNode = require('./gatsby/onCreateNode')
+exports.onCreateWebpackConfig = ({ actions }) => {
+  actions.setWebpackConfig({
+    node : {
+      fs : "empty"
+    }
+  })
+};

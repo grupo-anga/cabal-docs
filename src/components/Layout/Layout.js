@@ -29,10 +29,13 @@ const Layout = ({
             title
           }
         }
-        allMarkdownRemark {
+        allContentfulItem(sort: { order:ASC, fields: [section___order, order] }) {
           edges {
             node {
-              fields {
+              slug
+              order
+              section {
+                order
                 slug
               }
             }
@@ -41,7 +44,11 @@ const Layout = ({
       }
     `}
     render={data => {
-      const allPosts = data.allMarkdownRemark.edges.map(edge => edge.node.fields.slug)
+      const items = data.allContentfulItem.edges
+      items.sort((a, b) => a.node.section.order === b.node.section.order ? a.node.order - b.node.order : a.node.section.order - b.node.section.order)
+      const allPosts = data.allContentfulItem.edges.map(edge => `/docs/${edge.node.section.slug}/${edge.node.slug}`)
+      // allPosts.sort((a, b) => a.node.section.order === b.node.section.order ? a.node.order - b.node.order : a.node.section.order - b.node.section.order)
+
       let onPostPage
       if (typeof window !== 'undefined') {
         let path;

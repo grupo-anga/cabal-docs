@@ -12,21 +12,21 @@ function Template({
   onSidebarContentExpand,
   expandedKey,
 }) {
-  const { markdownRemark } = data // data.markdownRemark holds our post data
-  const { frontmatter, html, id } = markdownRemark
-  if (expandedKey !== id) {
-    onSidebarContentExpand(id)
+  const { contentfulItem } = data
+  const { slug, body } = contentfulItem
+  if (expandedKey !== slug) {
+    onSidebarContentExpand(slug)
   }
 
   return (
-    <Layout sidebarRoot={frontmatter.root}>
+    <Layout sidebarRoot={'/docs'}>
     <div className="blog-post-container">
       <div className="blog-post">
         {/* <h1>{frontmatter.title}</h1>
         <h5>{frontmatter.date}</h5> */}
         <div
           className="blog-post-content"
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: body.childContentfulRichText.html }}
         />
       </div>
     </div>
@@ -47,17 +47,13 @@ const mapDispatchToProps = {
 export default connect(mapStateToProps, mapDispatchToProps) (Template)
 
 export const pageQuery = graphql`
-  query($path: String!) {
-    markdownRemark(fields: { slug: { eq: $path} }) {
-      fields {
-        slug
-      }
-      id
-      html
-      frontmatter {
-        date(formatString: "MMMM DD, YYYY")
-        title
-        root
+  query($slug:String!) {
+    contentfulItem(slug:{eq: $slug}) {
+      slug
+      body {
+        childContentfulRichText {
+          html
+        }
       }
     }
   }

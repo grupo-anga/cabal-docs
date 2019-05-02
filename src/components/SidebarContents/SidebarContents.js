@@ -10,13 +10,13 @@ import { pathPrefix } from '../../../gatsby-config'
 
 const SubMenu = Menu.SubMenu
 
-const convertToTree = (data) => {
+const convertToTree = (data, root) => {
   const list = data.map(edge => {
       return ({
-        path: edge.node.fields.slug,
-        key: edge.node.id,
-        title: edge.node.frontmatter.title,
-        parents: edge.node.frontmatter.parents
+        path: `${root}/${edge.node.section.slug}/${edge.node.slug}`,
+        key: edge.node.slug,
+        title: `${edge.node.order}. ${edge.node.title}`,
+        parents: [edge.node.section.title]
       })
     })
   return constructTree(list)
@@ -51,7 +51,7 @@ const constructTree = (list) => {
 
 const sortTree = tree => {
   tree.sort((a,b)=> {
-    if (((a.children && b.children) || 
+    if (((a.children && b.children) ||
     (!a.children && !b.children)) &&
     a.title > b.title) return 1
     else if (a.children) return 1
@@ -71,26 +71,24 @@ class SidebarContents extends Component {
       <StaticQuery
         query={graphql`
           query sidebarContentQuery {
-            allMarkdownRemark(sort: { order: ASC, fields: [fields___slug] }) {
+            allContentfulItem(sort: { order:ASC, fields: [section___order, order] }) {
               edges {
                 node {
-                  fields {
+                  slug
+                  section {
+                    order
+                    title
                     slug
                   }
-                  id
-                  frontmatter {
-                    title
-                    parents
-                  }
+                  order
+                  title
                 }
               }
             }
           }
         `}
         render={data => {
-          const [tree, dir] = convertToTree(data.allMarkdownRemark.edges.filter(node => 
-            node.node.fields.slug.startsWith(root)
-          ))
+          const [tree, dir] = convertToTree(data.allContentfulItem.edges, root)
           sortTree(tree)
           const loop = data => data.map((item) => {
             if (item.children) {
@@ -107,14 +105,14 @@ class SidebarContents extends Component {
               </Menu.Item>
             )
           })
-          const path = window.location.pathname.replace(pathPrefix.slice(0,-1),"")
-          const selectedKeys = data.allMarkdownRemark.edges
-            .filter(item => path === item.node.fields.slug ||
-              (path.slice(0,-1) === item.node.fields.slug && path.slice(-1) === '/'))
-            .length > 0 ? [expandedKey] : []
+          const path = window.location.pathname.replace(pathPrefix.slice(0,-1),"").split('/').reverse()
+          const selectedKeys = data.allContentfulItem.edges
+            .filter(item => path[1] === item.node.section.slug && (
+              path[0] === item.node.slug ||(path[0].slice(0,-1) === item.node.slug && path.slice(-1) === '/'))
+            ).length > 0 ? [expandedKey] : []
           const defaultOpenKeys = dir.map(item => item.key)
           return (
-              <Menu 
+              <Menu
                 mode="inline"
                 defaultOpenKeys={defaultOpenKeys}
                 selectedKeys={selectedKeys}

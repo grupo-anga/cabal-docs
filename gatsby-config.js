@@ -1,3 +1,9 @@
+const dotenv = require('dotenv')
+
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
+
 module.exports = {
   siteMetadata: {
     title: 'Cabal Brasil - MGP',
@@ -5,6 +11,14 @@ module.exports = {
     description: `Documentação da Metodologia de Gestão de Projetos da Cabal Brasil`,
   },
   plugins: [
+    {
+      resolve: 'gatsby-source-contentful',
+      options: {
+        spaceId: process.env.CONTENTFUL_SPACE_ID,
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+      }
+    },
+    '@contentful/gatsby-transformer-contentful-richtext',
     'gatsby-plugin-react-helmet',
     {
       resolve: `gatsby-source-filesystem`,
