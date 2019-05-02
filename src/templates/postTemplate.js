@@ -6,20 +6,8 @@ import { onSidebarContentExpand } from '../actions/layout'
 import "katex/dist/katex.min.css"
 import { getSidebarExpandedKey } from "../store/selectors";
 import "./postTemplate.css";
-import { BLOCKS, INLINES } from '@contentful/rich-text-types'
-import RichText from '@madebyconnor/rich-text-to-jsx'
-import { richTextToJsx } from '@madebyconnor/rich-text-to-jsx'
+import { BLOCKS } from '@contentful/rich-text-types'
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
-
-const ImageLink = ({ file, title }) => (
-  <a href={file.url} download>
-    {title}
-  </a>
-)
-
-const Image = ({ file, title, className }) => (
-  <img className={className} src={file.url} alt={title} />
-)
 
 function Template({
   data, // this prop will be injected by the GraphQL query below.
@@ -36,26 +24,13 @@ function Template({
     renderNode: {
       [BLOCKS.EMBEDDED_ASSET]: (node, children) => {
         console.log(node)
+        const { fields } = node.data.target
         return (
-          <img src={node.data.target.fields.file['en-US'].url} />
+          <img src={fields.file['en-US'].url} alt={fields.title} />
         )
       },
     }
   }
-
-  const overrides = {
-    [INLINES.ENTRY_HYPERLINK]: {
-      image: ImageLink
-    },
-    [BLOCKS.EMBEDDED_ENTRY]: {
-      image: {
-        component: Image,
-        props: {
-          className: 'image--fullwidth'
-        }
-      }
-    }
-  };
 
   return (
     <Layout sidebarRoot={'/docs'}>
@@ -65,7 +40,6 @@ function Template({
         <h5>{frontmatter.date}</h5> */}
         <div className="blog-post-content">
           {documentToReactComponents(body.json, options)}
-          {/* richTextToJsx(body.json, options)*/}
         </div>
       </div>
     </div>
