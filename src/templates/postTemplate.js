@@ -6,6 +6,8 @@ import { onSidebarContentExpand } from '../actions/layout'
 import "katex/dist/katex.min.css"
 import { getSidebarExpandedKey } from "../store/selectors";
 import "./postTemplate.css";
+import { BLOCKS, MARKS } from '@contentful/rich-text-types'
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
 
 function Template({
   data, // this prop will be injected by the GraphQL query below.
@@ -18,16 +20,21 @@ function Template({
     onSidebarContentExpand(slug)
   }
 
+  const options = {
+    renderNode: {
+      [BLOCKS.EMBEDDED_ASSET]: (node, children) => <img src={node.data.target.fields.file['en-US'].url} />,
+    }
+  }
+
   return (
     <Layout sidebarRoot={'/docs'}>
     <div className="blog-post-container">
       <div className="blog-post">
         {/* <h1>{frontmatter.title}</h1>
         <h5>{frontmatter.date}</h5> */}
-        <div
-          className="blog-post-content"
-          dangerouslySetInnerHTML={{ __html: body.childContentfulRichText.html }}
-        />
+        <div className="blog-post-content">
+          {documentToReactComponents(body.json, options)}
+        </div>
       </div>
     </div>
     </Layout>
@@ -51,9 +58,7 @@ export const pageQuery = graphql`
     contentfulItem(slug:{eq: $slug}) {
       slug
       body {
-        childContentfulRichText {
-          html
-        }
+        json
       }
     }
   }

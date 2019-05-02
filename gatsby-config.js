@@ -18,7 +18,6 @@ module.exports = {
         accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
       }
     },
-    '@contentful/gatsby-transformer-contentful-richtext',
     'gatsby-plugin-react-helmet',
     {
       resolve: `gatsby-source-filesystem`,
