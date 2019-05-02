@@ -23,7 +23,6 @@ function Template({
   const options = {
     renderNode: {
       [BLOCKS.EMBEDDED_ASSET]: (node, children) => {
-        console.log(node)
         const { fields } = node.data.target
         return (
           <img src={fields.file['en-US'].url} alt={fields.title} />

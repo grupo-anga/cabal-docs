@@ -12,11 +12,13 @@ const SubMenu = Menu.SubMenu
 
 const convertToTree = (data, root) => {
   const list = data.map(edge => {
+      const { section } = edge.node
       return ({
         path: `${root}/${edge.node.section.slug}/${edge.node.slug}`,
         key: edge.node.slug,
         title: `${edge.node.order}. ${edge.node.title}`,
-        parents: [edge.node.section.title]
+        parents: [section],
+        order: edge.node.order
       })
     })
   return constructTree(list)
@@ -31,17 +33,18 @@ const constructTree = (list) => {
       let subtree = tree
       for (let i = 0; i < item.parents.length; i++) {
         if (subtree
-          .filter(node => node.title === item.parents[i] && node.children)
+          .filter(node => node.title === item.parents[i].title && node.children)
           .length === 0) {
           const newNode = {
-            key: "tree/" + item.parents[i],
-            title: item.parents[i],
-            children: []
+            key: "tree/" + item.parents[i].slug,
+            title: item.parents[i].title,
+            children: [],
+            order: item.parents[i].order
           }
           subtree.push(newNode)
           dir.push(newNode)
         }
-        subtree = subtree.find(node => node.title === item.parents[i] && node.children).children
+        subtree = subtree.find(node => node.title === item.parents[i].title && node.children).children
       }
       subtree.push(item)
     }
@@ -51,11 +54,7 @@ const constructTree = (list) => {
 
 const sortTree = tree => {
   tree.sort((a,b)=> {
-    if (((a.children && b.children) ||
-    (!a.children && !b.children)) &&
-    a.title > b.title) return 1
-    else if (a.children) return 1
-    return -1
+    return a.order - b.order
   })
 }
 
