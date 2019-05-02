@@ -5,6 +5,7 @@
   "author": "Luca(Wei) Chen <wei@cvluca.com>",
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^13.2.0",
+    "@madebyconnor/rich-text-to-jsx": "^2.1.1",
     "antd": "^3.10.8",
     "fs": "0.0.1-security",
     "gatsby": "^2.3.25",
